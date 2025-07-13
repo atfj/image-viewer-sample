@@ -32,12 +32,14 @@ struct ImageSearchUiState {
 @MainActor
 class ImageSearchViewModel: ObservableObject {
     @Published private(set) var state = ImageSearchUiState()
+    private let datasource: PhotosDataSourceProtocol
     private let perPage: Int = 20
     private var page = 1
     private var currentTask: Task<Void, Never>?
     
-    init(state: ImageSearchUiState = ImageSearchUiState()) {
+    init(state: ImageSearchUiState = ImageSearchUiState(), datasource: PhotosDataSourceProtocol = PhotosDataSource()) {
         self.state = state
+        self.datasource = datasource
     }
     
     func onQueryChanged(_ query: String) {
@@ -69,12 +71,23 @@ class ImageSearchViewModel: ObservableObject {
     
     private func loadItems() async {
         do {
-            let newItems = try await FakeDataSource.fetchItems(page: page, perPage: perPage, query: state.query)
+            let response = try await datasource.search(query: state.query, page: page, perPage: perPage)
+            let newItems = response.photos.map { e in
+                Photo(
+                    id: e.id,
+                    thumbnailUrl: URL(string: e.src.tiny),
+                    previewUrl: URL(string: e.src.original)
+                )
+            }
             await MainActor.run {
-                self.state.items += newItems
-                self.page += 1
-                self.state.totalItems = FakeDataSource.total
-                self.state.status = .loaded
+                if response.totalResults == 0 {
+                    self.state.status = .empty
+                } else {
+                    self.state.items += newItems
+                    self.page += 1
+                    self.state.totalItems = response.totalResults
+                    self.state.status = .loaded
+                }
             }
         } catch is CancellationError {
             // ignore
@@ -83,26 +96,5 @@ class ImageSearchViewModel: ObservableObject {
                 self.state.status = .error
             }
         }
-    }
-}
-
-struct FakeDataSource {
-    static let total = 100
-    static func fetchItems(page: Int, perPage: Int, query: String) async throws -> [Photo] {
-        try? await Task.sleep(nanoseconds: 2000 * 1_000_000)
-        
-        let allItems = Array(1...total).map { i in
-            Photo(
-                id: i,
-                title: "item \(i)",
-                thumbnailUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"),
-                previewUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png"),
-            )
-        }
-        
-        let startIndex = (page - 1) * perPage
-        let endIndex = min(startIndex + perPage, allItems.count)
-        let pageItems = (startIndex < endIndex) ? Array(allItems[startIndex..<endIndex]) : []
-        return pageItems
     }
 }

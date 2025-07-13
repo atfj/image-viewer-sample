@@ -9,7 +9,6 @@ import Foundation
 
 struct Photo: Identifiable {
     let id: Int
-    let title: String
     let thumbnailUrl: URL?
     let previewUrl: URL?
 }

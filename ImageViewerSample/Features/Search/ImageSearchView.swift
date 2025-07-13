@@ -121,7 +121,10 @@ struct ImageThumbnail: View {
 }
 
 #Preview("Default") {
-    let viewModel = ImageSearchViewModel()
+    let viewModel = ImageSearchViewModel(
+        state: ImageSearchUiState(),
+        datasource: MockPhotosDataSource.mock
+    )
     ImageSearchView(viewModel: viewModel)
 }
 
@@ -132,7 +135,10 @@ struct ImageThumbnail: View {
         totalItems: 0,
         status: .empty
     )
-    let viewModel = ImageSearchViewModel(state: state)
+    let viewModel = ImageSearchViewModel(
+        state: state,
+        datasource: MockPhotosDataSource.mock
+    )
     ImageSearchView(viewModel: viewModel)
 }
 
@@ -143,7 +149,10 @@ struct ImageThumbnail: View {
         totalItems: 0,
         status: .searching
     )
-    let viewModel = ImageSearchViewModel(state: state)
+    let viewModel = ImageSearchViewModel(
+        state: state,
+        datasource: MockPhotosDataSource.mock
+    )
     ImageSearchView(viewModel: viewModel)
 }
 
@@ -151,7 +160,6 @@ struct ImageThumbnail: View {
     let items: [Photo] = Array(1...5).map { i in
         Photo(
             id: i,
-            title: "item \(i)",
             thumbnailUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"),
             previewUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280")
         )
@@ -162,6 +170,9 @@ struct ImageThumbnail: View {
         totalItems: 5,
         status: .loaded
     )
-    let viewModel = ImageSearchViewModel(state: state)
+    let viewModel = ImageSearchViewModel(
+        state: state,
+        datasource: MockPhotosDataSource.mock
+    )
     ImageSearchView(viewModel: viewModel)
 }
