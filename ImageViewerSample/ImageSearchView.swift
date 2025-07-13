@@ -70,7 +70,7 @@ struct ImageThumbnail: View {
                 Image(systemName: "xmark.octagon.fill")
                     .resizable()
                     .frame(width: 24, height: 24)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(.secondary)
                     .frame(width: 100, height: 100)
             @unknown default:
                 EmptyView()
