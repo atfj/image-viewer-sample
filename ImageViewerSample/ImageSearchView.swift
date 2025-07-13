@@ -27,11 +27,7 @@ struct ImageSearchView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(items) { item in
-                        VStack {
-                            Rectangle()
-                                .fill(Color.gray)
-                                .frame(width: 100, height: 100)
-                        }
+                        ImageThumbnail(url: item.url)
                     }
                 }
             }
@@ -43,6 +39,47 @@ struct ImageSearchView: View {
             .padding()
         }
     }
+}
+
+struct ImageThumbnail: View {
+    let url: URL?
+    
+    var body: some View {
+        AsyncImage(url: url) { phase in
+            switch phase {
+            case .empty:
+                ProgressView()
+                    .frame(width: 100, height: 100)
+            case .success(let image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 100, height: 100)
+                    .clipped()
+            case .failure:
+                Image(systemName: "xmark.octagon.fill")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.gray)
+                    .frame(width: 100, height: 100)
+            @unknown default:
+                EmptyView()
+            }
+        }
+        .frame(width: 100, height: 100)
+    }
+}
+
+#Preview("Empty") {
+    ImageThumbnail(url: nil)
+}
+
+#Preview("Success") {
+    ImageThumbnail(url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"))
+}
+
+#Preview("Failure") {
+    ImageThumbnail(url: URL(string: "https://invalid-url"))
 }
 
 #Preview {
