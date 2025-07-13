@@ -20,22 +20,17 @@ struct ImageSearchView: View {
         Photo(id: i, title: "item \(i)", url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280")!)
     }
     
-    private let columns = Array(
-        repeating: GridItem(.flexible(), spacing: 16),
-        count: 3
-    )
+    private let columns = [GridItem(.adaptive(minimum: 100), spacing: 16)]
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVGrid(columns: columns) {
+                LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(items) { item in
                         VStack {
                             Rectangle()
                                 .fill(Color.gray)
                                 .frame(width: 100, height: 100)
-                            Text(item.title)
-                                .frame(width: 100)
                         }
                     }
                 }
