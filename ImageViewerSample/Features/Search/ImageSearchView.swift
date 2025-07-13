@@ -37,7 +37,7 @@ struct ImageSearchView: View {
                                     guard viewModel.state.status == .loaded else { return }
                                     guard viewModel.state.hasMoreItems else { return }
                                     guard item.id == lastItem?.id else { return }
-                                    viewModel.loadMoreItems()
+                                    viewModel.send(.loadMoreItems)
                                 }
                             }
                         }
@@ -56,7 +56,7 @@ struct ImageSearchView: View {
                     VStack(spacing: 16) {
                         Text("Failed to load images")
                         Button("Retry") {
-                            viewModel.retry()
+                            viewModel.send(.retry)
                         }
                     }
                 }
@@ -64,7 +64,7 @@ struct ImageSearchView: View {
             .searchable(
                 text: Binding(
                     get: { viewModel.state.query },
-                    set: { viewModel.onQueryChanged($0) }
+                    set: { viewModel.send(.queryChanged($0)) }
                 ),
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "Search by keyword"

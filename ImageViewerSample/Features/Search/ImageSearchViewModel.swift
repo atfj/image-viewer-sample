@@ -28,6 +28,11 @@ struct ImageSearchUiState {
     }
 }
 
+enum ImageSearchAction {
+    case queryChanged(String)
+    case loadMoreItems
+    case retry
+}
 
 @MainActor
 class ImageSearchViewModel: ObservableObject {
@@ -42,14 +47,25 @@ class ImageSearchViewModel: ObservableObject {
         self.datasource = datasource
     }
     
-    func onQueryChanged(_ query: String) {
+    func send(_ action: ImageSearchAction) {
+        switch action {
+        case .queryChanged(let newQuery):
+            queryChanged(newQuery)
+        case .loadMoreItems:
+            loadMoreItems()
+        case .retry:
+            retry()
+        }
+    }
+    
+    private func queryChanged(_ query: String) {
         state.query = query
         currentTask?.cancel()
         
         search()
     }
     
-    func loadMoreItems() {
+    private func loadMoreItems() {
         guard state.hasMoreItems else { return }
         currentTask?.cancel()
         state.status = .loadingMore
@@ -58,7 +74,7 @@ class ImageSearchViewModel: ObservableObject {
         }
     }
     
-    func retry() {
+    private func retry() {
         currentTask?.cancel()
         state.status = .searching
         currentTask = Task { [weak self] in
