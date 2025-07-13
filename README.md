@@ -28,3 +28,10 @@ API_KEY      = <your_api_key>
 - Unit tests are covered.
 - Zooming in, out and dragging during zooming are supported an an additional feature.
 - The photo preview screen is shown as a full screen modal.
+- Used AI tools
+    - Chat GPT o4-mini-high
+    - Claude 4 sonnet
+- Working time: Around 20 hours
+
+## Reference
+- https://github.com/line/line-sdk-ios-swift/tree/master/LineSDK/LineSDK/Networking/Client
