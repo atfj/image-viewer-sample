@@ -9,7 +9,7 @@ protocol PhotosDataSourceProtocol {
     func search(query: String, page: Int?, perPage: Int?) async throws -> PexelsSearchResponse
 }
 
-class PhotosDataSource: PhotosDataSourceProtocol {
+actor PhotosDataSource: PhotosDataSourceProtocol {
     let apiClient: ApiClientProtocol
     
     init(_ apiClient: ApiClientProtocol = ApiClient()) {
