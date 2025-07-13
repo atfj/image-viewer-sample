@@ -24,6 +24,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9642C0242E24098800DC86FA /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
+		9642C0252E24098800DC86FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9649C15C2E1D277F00C6C23E /* ImageViewerSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageViewerSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9649C1692E1D278200C6C23E /* ImageViewerSampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImageViewerSampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9649C1732E1D278200C6C23E /* ImageViewerSampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImageViewerSampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +77,8 @@
 		9649C1532E1D277F00C6C23E = {
 			isa = PBXGroup;
 			children = (
+				9642C0242E24098800DC86FA /* Development.xcconfig */,
+				9642C0252E24098800DC86FA /* Info.plist */,
 				9649C15E2E1D277F00C6C23E /* ImageViewerSample */,
 				9649C16C2E1D278200C6C23E /* ImageViewerSampleTests */,
 				9649C1762E1D278200C6C23E /* ImageViewerSampleUITests */,
