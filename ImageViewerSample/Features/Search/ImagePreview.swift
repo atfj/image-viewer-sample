@@ -11,6 +11,9 @@ struct ImagePreview: View {
     let url: URL?
     @Environment(\.dismiss) var dismiss
     
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    
     var body: some View {
         ZStack(alignment: .topTrailing) {
             Color.black.ignoresSafeArea()
@@ -24,6 +27,25 @@ struct ImagePreview: View {
                     image
                         .resizable()
                         .scaledToFit()
+                        .scaleEffect(scale)
+                        .gesture(
+                            MagnificationGesture()
+                                .onChanged { value in
+                                    scale = lastScale * value
+                                }
+                                .onEnded { _ in
+                                    withAnimation {
+                                        scale = min(max(1.0, scale), 5.0)
+                                        lastScale = scale
+                                    }
+                                }
+                        )
+                        .onTapGesture(count: 2) {
+                            withAnimation {
+                                scale = 1.0
+                                lastScale = 1.0
+                            }
+                        }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case .failure:
                     Image(systemName: "xmark.octagon.fill")
