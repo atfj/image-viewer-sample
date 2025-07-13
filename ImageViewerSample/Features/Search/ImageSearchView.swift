@@ -53,7 +53,12 @@ struct ImageSearchView: View {
                 case .empty:
                     Text("No results found")
                 case .error:
-                    Text("Failed to load images")
+                    VStack(spacing: 16) {
+                        Text("Failed to load images")
+                        Button("Retry") {
+                            viewModel.retry()
+                        }
+                    }
                 }
             }
             .searchable(
@@ -148,6 +153,20 @@ struct ImageThumbnail: View {
         items: [],
         totalItems: 0,
         status: .searching
+    )
+    let viewModel = ImageSearchViewModel(
+        state: state,
+        datasource: MockPhotosDataSource.mock
+    )
+    ImageSearchView(viewModel: viewModel)
+}
+
+#Preview("Error") {
+    let state = ImageSearchUiState(
+        query: "test",
+        items: [],
+        totalItems: 0,
+        status: .error
     )
     let viewModel = ImageSearchViewModel(
         state: state,

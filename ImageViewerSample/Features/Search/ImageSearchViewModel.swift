@@ -58,6 +58,14 @@ class ImageSearchViewModel: ObservableObject {
         }
     }
     
+    func retry() {
+        currentTask?.cancel()
+        state.status = .searching
+        currentTask = Task { [weak self] in
+            await self?.loadItems()
+        }
+    }
+    
     private func search() {
         currentTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: 500 * 1_000_000) // wait for 500 ms
