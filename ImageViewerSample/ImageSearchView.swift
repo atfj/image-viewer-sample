@@ -28,14 +28,17 @@ struct ImageSearchView: View {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 8) {
                             ForEach(viewModel.state.items) { item in
-                                ImageThumbnail(url: item.url)
-                                    .onAppear {
-                                        let lastItem: Photo? = viewModel.state.items.last
-                                        guard viewModel.state.status == .loaded else { return }
-                                        guard viewModel.state.hasMoreItems else { return }
-                                        guard item.id == lastItem?.id else { return }
-                                        viewModel.loadMoreItems()
-                                    }
+                                ImageThumbnail(
+                                    thumbnailUrl: item.thumbnailUrl,
+                                    previewUrl:item.previewUrl
+                                )
+                                .onAppear {
+                                    let lastItem: Photo? = viewModel.state.items.last
+                                    guard viewModel.state.status == .loaded else { return }
+                                    guard viewModel.state.hasMoreItems else { return }
+                                    guard item.id == lastItem?.id else { return }
+                                    viewModel.loadMoreItems()
+                                }
                             }
                         }
                         if (viewModel.state.status == .loadingMore) {
@@ -67,10 +70,12 @@ struct ImageSearchView: View {
 }
 
 struct ImageThumbnail: View {
-    let url: URL?
+    let thumbnailUrl: URL?
+    let previewUrl: URL?
+    @State private var showFullScreen: Bool = false
     
     var body: some View {
-        AsyncImage(url: url) { phase in
+        AsyncImage(url: thumbnailUrl) { phase in
             switch phase {
             case .empty:
                 ProgressView()
@@ -81,6 +86,9 @@ struct ImageThumbnail: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 100, height: 100)
                     .clipped()
+                    .onTapGesture {
+                        showFullScreen = true
+                    }
             case .failure:
                 Image(systemName: "xmark.octagon.fill")
                     .resizable()
@@ -92,14 +100,23 @@ struct ImageThumbnail: View {
             }
         }
         .frame(width: 100, height: 100)
+        .fullScreenCover(isPresented: $showFullScreen) {
+            ImagePreview(url: previewUrl)
+        }
     }
 }
 
 #Preview("ImageThumbnail") {
     VStack(spacing: 16) {
-        ImageThumbnail(url: nil)
-        ImageThumbnail(url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"))
-        ImageThumbnail(url: URL(string: "https://invalid-url"))
+        ImageThumbnail(thumbnailUrl: nil, previewUrl: nil)
+        ImageThumbnail(
+            thumbnailUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"),
+            previewUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png")
+        )
+        ImageThumbnail(
+            thumbnailUrl: URL(string: "https://invalid-url"),
+            previewUrl: nil
+        )
     }
 }
 
@@ -132,7 +149,12 @@ struct ImageThumbnail: View {
 
 #Preview("Loaded") {
     let items: [Photo] = Array(1...5).map { i in
-        Photo(id: i, title: "item \(i)", url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280")!)
+        Photo(
+            id: i,
+            title: "item \(i)",
+            thumbnailUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"),
+            previewUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280")
+        )
     }
     let state = ImageSearchUiState(
         query: "test",
