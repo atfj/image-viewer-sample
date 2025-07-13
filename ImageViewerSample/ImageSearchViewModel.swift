@@ -92,7 +92,12 @@ struct FakeDataSource {
         try? await Task.sleep(nanoseconds: 2000 * 1_000_000)
         
         let allItems = Array(1...total).map { i in
-            Photo(id: i, title: "item \(i)", url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280")!)
+            Photo(
+                id: i,
+                title: "item \(i)",
+                thumbnailUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"),
+                previewUrl: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png"),
+            )
         }
         
         let startIndex = (page - 1) * perPage
