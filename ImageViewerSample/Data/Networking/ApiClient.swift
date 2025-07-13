@@ -7,15 +7,18 @@
 
 import Foundation
 
+/// Protocol defining an async data task for API requests.
 protocol ApiSessionProtocol {
     func data<R: Request>(for request: R) async throws -> (Data, URLResponse)
 }
 
+/// Protocol for an API client that can send requests and decode responses.
 protocol ApiClientProtocol {
     var session: ApiSessionProtocol { get }
     func request<R: Request>(of request: R) async throws -> R.Response
 }
 
+/// Default implementation for sending a request and decoding the response.
 extension ApiClientProtocol {
     func request<R: Request>(of request: R) async throws -> R.Response {
         do {
@@ -47,7 +50,8 @@ extension ApiClientProtocol {
     }
 }
 
-class APISession: ApiSessionProtocol {
+/// Concrete implementation of ApiSessionProtocol using URLSession.
+class ApiSession: ApiSessionProtocol {
     let session: URLSession
 
     init(_ session: URLSession = .shared) {
@@ -59,6 +63,7 @@ class APISession: ApiSessionProtocol {
     }
 }
 
+/// Concrete API client using APISession for network requests.
 class ApiClient: ApiClientProtocol {
-    let session: ApiSessionProtocol = APISession()
+    let session: ApiSessionProtocol = ApiSession()
 }

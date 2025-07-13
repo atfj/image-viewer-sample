@@ -9,16 +9,30 @@ import Foundation
 
 typealias Parameters = [String: Any]
 
+/// Protocol representing an API request.
+///
+/// Conforming types specify the expected response type, HTTP method, endpoint path,
+/// authentication, query parameters, body parameters, and content type.
+/// Provides a default implementation for building a `URLRequest`.
 protocol Request {
+    /// The expected response type for this request
     associatedtype Response: Decodable
 
+    /// The HTTP method (GET, POST, etc.)
     var method: HttpMethod { get }
+    /// The base URL for the API
     var baseURL: URL { get }
+    /// The endpoint path (appended to the base URL)
     var path: String { get }
+    /// The API key for authorization
     var key: String { get }
+    /// The bearer token for authorization (if used)
     var token: String { get }
+    /// Query items to be added to the URL
     var pathQueries: [URLQueryItem]? { get }
+    /// Parameters to be sent in the request body
     var parameters: Parameters? { get }
+    /// The content type of the request (e.g., JSON)
     var contentType: ContentType { get }
 }
 
