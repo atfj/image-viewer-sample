@@ -80,8 +80,11 @@ extension Request {
         }
 
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue(key, forHTTPHeaderField: "X-API-KEY")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        if key.isEmpty {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            request.setValue(key, forHTTPHeaderField: "Authorization")
+        }
         request.httpBody = httpBody
 
         return request
