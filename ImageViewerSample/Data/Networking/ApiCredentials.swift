@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// API credential parameters read from Info.plist
 extension Bundle {
     var baseURL: URL {
         guard let str = object(forInfoDictionaryKey: "API_BASE_URL") as? String, let url = URL(string: str) else {
