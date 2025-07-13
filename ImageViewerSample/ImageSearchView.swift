@@ -7,14 +7,8 @@
 
 import SwiftUI
 
-struct Photo: Identifiable {
-    let id: Int
-    let title: String
-    let url: URL
-}
-
 struct ImageSearchView: View {
-    @State private var searchText: String = ""
+    @StateObject var viewModel: ImageSearchViewModel
     
     private let items: [Photo] = Array(1...100).map { i in
         Photo(id: i, title: "item \(i)", url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280")!)
@@ -22,27 +16,37 @@ struct ImageSearchView: View {
     
     private let columns = [GridItem(.adaptive(minimum: 100), spacing: 16)]
     
+    init(viewModel: ImageSearchViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
     var body: some View {
         NavigationStack {
             Group {
-                if items.isEmpty {
-                    if (!searchText.isEmpty) {
-                        Text("Type something to search...")
-                    } else {
-                        Text("No results found.")
-                    }
-                } else {
+                switch viewModel.state.status {
+                case .idle:
+                    Text("Type something to search...")
+                case .searching:
+                    ProgressView()
+                case .searched:
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 8) {
-                            ForEach(items) { item in
+                            ForEach(viewModel.state.items) { item in
                                 ImageThumbnail(url: item.url)
                             }
                         }
                     }
+                case .empty:
+                    Text("No results found")
+                case .error:
+                    Text("Failed to load images")
                 }
             }
             .searchable(
-                text: $searchText,
+                text: Binding(
+                    get: { viewModel.state.query },
+                    set: { viewModel.onQueryChanged($0) }
+                ),
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "Search by keyword"
             )
@@ -80,18 +84,51 @@ struct ImageThumbnail: View {
     }
 }
 
+#Preview("ImageThumbnail") {
+    VStack(spacing: 16) {
+        ImageThumbnail(url: nil)
+        ImageThumbnail(url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"))
+        ImageThumbnail(url: URL(string: "https://invalid-url"))
+    }
+}
+
+#Preview("Default") {
+    let viewModel = ImageSearchViewModel()
+    ImageSearchView(viewModel: viewModel)
+}
+
 #Preview("Empty") {
-    ImageThumbnail(url: nil)
+    let state = ImageSearchUiState(
+        query: "test",
+        items: [],
+        totalItems: 0,
+        status: .empty
+    )
+    let viewModel = ImageSearchViewModel(state: state)
+    ImageSearchView(viewModel: viewModel)
 }
 
-#Preview("Success") {
-    ImageThumbnail(url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"))
+#Preview("Loading") {
+    let state = ImageSearchUiState(
+        query: "test",
+        items: [],
+        totalItems: 0,
+        status: .searching
+    )
+    let viewModel = ImageSearchViewModel(state: state)
+    ImageSearchView(viewModel: viewModel)
 }
 
-#Preview("Failure") {
-    ImageThumbnail(url: URL(string: "https://invalid-url"))
-}
-
-#Preview {
-    ImageSearchView()
+#Preview("Loaded") {
+    let items: [Photo] = Array(1...5).map { i in
+        Photo(id: i, title: "item \(i)", url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280")!)
+    }
+    let state = ImageSearchUiState(
+        query: "test",
+        items: items,
+        totalItems: 10,
+        status: .searched
+    )
+    let viewModel = ImageSearchViewModel(state: state)
+    ImageSearchView(viewModel: viewModel)
 }

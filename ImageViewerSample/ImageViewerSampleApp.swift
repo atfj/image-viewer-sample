@@ -11,7 +11,7 @@ import SwiftUI
 struct ImageViewerSampleApp: App {
     var body: some Scene {
         WindowGroup {
-            ImageSearchView()
+            ImageSearchView(viewModel: ImageSearchViewModel())
         }
     }
 }
