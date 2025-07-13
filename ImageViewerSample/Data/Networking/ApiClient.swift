@@ -59,6 +59,6 @@ class APISession: ApiSessionProtocol {
     }
 }
 
-class APIClient: ApiClientProtocol {
+class ApiClient: ApiClientProtocol {
     let session: ApiSessionProtocol = APISession()
 }

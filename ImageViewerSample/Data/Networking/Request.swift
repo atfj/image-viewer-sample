@@ -23,6 +23,30 @@ protocol Request {
 }
 
 extension Request {
+    var baseURL: URL {
+        return Bundle.main.baseURL
+    }
+
+    var key: String {
+        return Bundle.main.apiKey
+    }
+    
+    var token: String {
+        return ""
+    }
+
+    var pathQueries: [URLQueryItem]? {
+        return nil
+    }
+
+    var parameters: Parameters? {
+        return nil
+    }
+
+    var contentType: ContentType {
+        return .json
+    }
+    
     func buildURLRequest() -> URLRequest {
         let url = baseURL.appendingPathComponent(path, isDirectory: false)
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
