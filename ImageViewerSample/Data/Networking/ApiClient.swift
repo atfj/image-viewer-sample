@@ -51,7 +51,7 @@ extension ApiClientProtocol {
 }
 
 /// Concrete implementation of ApiSessionProtocol using URLSession.
-class APISession: ApiSessionProtocol {
+class ApiSession: ApiSessionProtocol {
     let session: URLSession
 
     init(_ session: URLSession = .shared) {
@@ -65,5 +65,5 @@ class APISession: ApiSessionProtocol {
 
 /// Concrete API client using APISession for network requests.
 class ApiClient: ApiClientProtocol {
-    let session: ApiSessionProtocol = APISession()
+    let session: ApiSessionProtocol = ApiSession()
 }
