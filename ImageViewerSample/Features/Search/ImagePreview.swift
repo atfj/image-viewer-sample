@@ -18,6 +18,7 @@ struct ImagePreview: View {
                 switch phase {
                 case .empty:
                     ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case .success(let image):
                     image
@@ -27,8 +28,8 @@ struct ImagePreview: View {
                 case .failure:
                     Image(systemName: "xmark.octagon.fill")
                         .resizable()
-                        .frame(width: 48, height: 48)
-                        .foregroundColor(.secondary)
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.white)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 @unknown default:
                     EmptyView()

@@ -72,3 +72,6 @@ WHILL/Resources/Generated
 WHILL/Resources/Generated/*
 
 .sentryclirc
+
+## Config
+Development.xcconfig

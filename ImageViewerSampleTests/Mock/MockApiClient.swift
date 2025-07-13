@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 @testable import ImageViewerSample
 
 class MockApiSession: ApiSessionProtocol {
