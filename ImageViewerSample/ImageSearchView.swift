@@ -10,10 +10,6 @@ import SwiftUI
 struct ImageSearchView: View {
     @StateObject var viewModel: ImageSearchViewModel
     
-    private let items: [Photo] = Array(1...100).map { i in
-        Photo(id: i, title: "item \(i)", url: URL(string: "https://images.pexels.com/photos/3573351/pexels-photo-3573351.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280")!)
-    }
-    
     private let columns = [GridItem(.adaptive(minimum: 100), spacing: 16)]
     
     init(viewModel: ImageSearchViewModel) {
@@ -28,12 +24,27 @@ struct ImageSearchView: View {
                     Text("Type something to search...")
                 case .searching:
                     ProgressView()
-                case .searched:
+                case .loaded, .loadingMore:
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 8) {
                             ForEach(viewModel.state.items) { item in
                                 ImageThumbnail(url: item.url)
+                                    .onAppear {
+                                        let lastItem: Photo? = viewModel.state.items.last
+                                        guard viewModel.state.status == .loaded else { return }
+                                        guard viewModel.state.hasMoreItems else { return }
+                                        guard item.id == lastItem?.id else { return }
+                                        viewModel.loadMoreItems()
+                                    }
                             }
+                        }
+                        if (viewModel.state.status == .loadingMore) {
+                            HStack {
+                                  Spacer()
+                                  ProgressView()
+                                  Spacer()
+                                }
+                                .padding(.vertical)
                         }
                     }
                 case .empty:
@@ -127,7 +138,7 @@ struct ImageThumbnail: View {
         query: "test",
         items: items,
         totalItems: 10,
-        status: .searched
+        status: .loaded
     )
     let viewModel = ImageSearchViewModel(state: state)
     ImageSearchView(viewModel: viewModel)
