@@ -8,18 +8,27 @@
 import SwiftUI
 
 struct ImageSearchView: View {
-    @StateObject var viewModel: ImageSearchViewModel
-    
-    private let columns = [GridItem(.adaptive(minimum: 100), spacing: 16)]
+    @StateObject private var viewModel: ImageSearchViewModel
     
     init(viewModel: ImageSearchViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     var body: some View {
+        ImageSearchContentView(state: viewModel.state, onAction: viewModel.send(_:))
+    }
+}
+
+struct ImageSearchContentView: View {
+    let state: ImageSearchUiState
+    let onAction: (ImageSearchAction) -> Void
+    
+    private let columns = [GridItem(.adaptive(minimum: 100), spacing: 16)]
+    
+    var body: some View {
         NavigationStack {
             Group {
-                switch viewModel.state.status {
+                switch state.status {
                 case .idle:
                     Text("Type something to search...")
                 case .searching:
@@ -27,21 +36,21 @@ struct ImageSearchView: View {
                 case .loaded, .loadingMore:
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 8) {
-                            ForEach(viewModel.state.items) { item in
+                            ForEach(state.items) { item in
                                 ImageThumbnail(
                                     thumbnailUrl: item.thumbnailUrl,
                                     previewUrl:item.previewUrl
                                 )
                                 .onAppear {
-                                    let lastItem: Photo? = viewModel.state.items.last
-                                    guard viewModel.state.status == .loaded else { return }
-                                    guard viewModel.state.hasMoreItems else { return }
+                                    let lastItem: Photo? = state.items.last
+                                    guard state.status == .loaded else { return }
+                                    guard state.hasMoreItems else { return }
                                     guard item.id == lastItem?.id else { return }
-                                    viewModel.send(.loadMoreItems)
+                                    onAction(.loadMoreItems)
                                 }
                             }
                         }
-                        if (viewModel.state.status == .loadingMore) {
+                        if (state.status == .loadingMore) {
                             HStack {
                                   Spacer()
                                   ProgressView()
@@ -56,15 +65,15 @@ struct ImageSearchView: View {
                     VStack(spacing: 16) {
                         Text("Failed to load images")
                         Button("Retry") {
-                            viewModel.send(.retry)
+                            onAction(.retry)
                         }
                     }
                 }
             }
             .searchable(
                 text: Binding(
-                    get: { viewModel.state.query },
-                    set: { viewModel.send(.queryChanged($0)) }
+                    get: { state.query },
+                    set: { onAction(.queryChanged($0)) }
                 ),
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "Search by keyword"
@@ -126,11 +135,7 @@ struct ImageThumbnail: View {
 }
 
 #Preview("Default") {
-    let viewModel = ImageSearchViewModel(
-        state: ImageSearchUiState(),
-        datasource: MockPhotosDataSource.mock
-    )
-    ImageSearchView(viewModel: viewModel)
+    ImageSearchContentView(state: ImageSearchUiState(), onAction: {_ in })
 }
 
 #Preview("Empty") {
@@ -140,11 +145,7 @@ struct ImageThumbnail: View {
         totalItems: 0,
         status: .empty
     )
-    let viewModel = ImageSearchViewModel(
-        state: state,
-        datasource: MockPhotosDataSource.mock
-    )
-    ImageSearchView(viewModel: viewModel)
+    ImageSearchContentView(state: state, onAction: {_ in })
 }
 
 #Preview("Loading") {
@@ -154,11 +155,7 @@ struct ImageThumbnail: View {
         totalItems: 0,
         status: .searching
     )
-    let viewModel = ImageSearchViewModel(
-        state: state,
-        datasource: MockPhotosDataSource.mock
-    )
-    ImageSearchView(viewModel: viewModel)
+    ImageSearchContentView(state: state, onAction: {_ in })
 }
 
 #Preview("Error") {
@@ -168,11 +165,7 @@ struct ImageThumbnail: View {
         totalItems: 0,
         status: .error
     )
-    let viewModel = ImageSearchViewModel(
-        state: state,
-        datasource: MockPhotosDataSource.mock
-    )
-    ImageSearchView(viewModel: viewModel)
+    ImageSearchContentView(state: state, onAction: {_ in })
 }
 
 #Preview("Loaded") {
@@ -189,9 +182,5 @@ struct ImageThumbnail: View {
         totalItems: 5,
         status: .loaded
     )
-    let viewModel = ImageSearchViewModel(
-        state: state,
-        datasource: MockPhotosDataSource.mock
-    )
-    ImageSearchView(viewModel: viewModel)
+    ImageSearchContentView(state: state, onAction: {_ in })
 }
