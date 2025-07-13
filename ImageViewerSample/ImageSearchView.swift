@@ -101,7 +101,7 @@ struct ImageThumbnail: View {
         }
         .frame(width: 100, height: 100)
         .fullScreenCover(isPresented: $showFullScreen) {
-            ImagePreviewView(url: previewUrl)
+            ImagePreview(url: previewUrl)
         }
     }
 }
