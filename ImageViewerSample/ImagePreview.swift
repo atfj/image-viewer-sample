@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ImagePreviewView: View {
+struct ImagePreview: View {
     let url: URL?
     @Environment(\.dismiss) var dismiss
     
