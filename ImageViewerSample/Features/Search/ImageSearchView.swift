@@ -159,7 +159,7 @@ struct ImageThumbnail: View {
     let state = ImageSearchUiState(
         query: "test",
         items: items,
-        totalItems: 10,
+        totalItems: 5,
         status: .loaded
     )
     let viewModel = ImageSearchViewModel(state: state)
