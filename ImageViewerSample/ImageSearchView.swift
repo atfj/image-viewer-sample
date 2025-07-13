@@ -24,10 +24,20 @@ struct ImageSearchView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 8) {
-                    ForEach(items) { item in
-                        ImageThumbnail(url: item.url)
+            Group {
+                if items.isEmpty {
+                    if (!searchText.isEmpty) {
+                        Text("Type something to search...")
+                    } else {
+                        Text("No results found.")
+                    }
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 8) {
+                            ForEach(items) { item in
+                                ImageThumbnail(url: item.url)
+                            }
+                        }
                     }
                 }
             }
